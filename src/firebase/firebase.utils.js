@@ -41,6 +41,33 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: 'select_account' });
 
+export const uploadCollection = (collectionName, documentsToAdd) => {
+  const collectionRef = firestore.collection(collectionName);
+  const batch = firestore.batch();
+  documentsToAdd.forEach((document) => {
+    const documentRef = collectionRef.doc();
+    batch.set(documentRef, document);
+  });
+  batch.commit();
+};
+
+export const convertCollectionsToMap = (collectionsRef) => {
+  const collectionsArray = collectionsRef.docs.map((docRef) => {
+    const { items, title } = docRef.data();
+    return {
+      items,
+      title,
+      routeName: encodeURI(title.toLowerCase()),
+      id: docRef.id,
+    };
+  });
+
+  return collectionsArray.reduce((accumulator, current) => {
+    accumulator[current.title.toLowerCase()] = current;
+    return accumulator;
+  }, {});
+};
+
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
 export default firebase;
