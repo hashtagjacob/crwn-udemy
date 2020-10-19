@@ -51,8 +51,8 @@ export const uploadCollection = (collectionName, documentsToAdd) => {
   batch.commit();
 };
 
-export const convertCollectionsToMap = (collectionsRef) => {
-  const collectionsArray = collectionsRef.docs.map((docRef) => {
+export const convertCollectionsToMap = (snapshot) => {
+  const collectionsArray = snapshot.docs.map((docRef) => {
     const { items, title } = docRef.data();
     return {
       items,
