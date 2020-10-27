@@ -5,49 +5,22 @@ import Header from './components/header/header.component';
 import HomePage from './pages/homepage/homepage.component';
 import ShopPage from './pages/shop/shop-page.component';
 import SignPage from './pages/sign/sign-page.component';
-
-import {
-  auth,
-  createUserProfileDocument,
-  uploadCollection,
-} from './firebase/firebase.utils';
 import { connect } from 'react-redux';
-import { setCurrentUser } from './redux/user/user.actions';
 import { createStructuredSelector } from 'reselect';
 import { selectCurrentUser } from './redux/user/user.selectors';
 import CheckoutPage from './pages/checkout/checkout.component';
-import {
-  selectCollections,
-  selectCollectionsForPreview,
-} from './redux/shop/shop.selectors';
+import { selectCollectionsForPreview } from './redux/shop/shop.selectors';
+import { checkUserSession } from './redux/user/user.actions';
 
 class App extends React.Component {
   unsubscribeFormAuth = null;
 
   componentDidMount() {
-    const { setCurrentUser, collections } = this.props;
-    this.unsubscribeFormAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
-        userRef.onSnapshot((snapshot) => {
-          setCurrentUser({
-            id: snapshot.id,
-            ...snapshot.data(),
-          });
-        });
-      } else {
-        setCurrentUser(null);
-      }
-    });
-    // uploadCollection(
-    //   "collections",
-    //   collections.map(({ title, items }) => ({ title, items }))
-    // );
+    const { checkUserSession } = this.props;
+    checkUserSession();
   }
 
-  componentWillUnmount() {
-    this.unsubscribeFormAuth();
-  }
+  componentWillUnmount() {}
 
   render() {
     return (
@@ -76,6 +49,6 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+  checkUserSession: () => dispatch(checkUserSession()),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -38,7 +38,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
-const provider = new firebase.auth.GoogleAuthProvider();
+export const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({ prompt: 'select_account' });
 
 export const uploadCollection = (collectionName, documentsToAdd) => {
@@ -69,5 +69,15 @@ export const convertCollectionsToMap = (snapshot) => {
 };
 
 export const signInWithGoogle = () => auth.signInWithPopup(provider);
+
+// these are to fake api
+export const getLoggedUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      unsubscribe();
+      resolve(user);
+    }, reject);
+  });
+};
 
 export default firebase;
